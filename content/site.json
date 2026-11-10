@@ -1,0 +1,82 @@
+{
+  "contact": {
+    "email": "ytyagi18@proton.me",
+    "instagram": "next.gen.stack",
+    "linkedin": "https://www.linkedin.com/in/yatharth-tyagi-915b853b7",
+    "inbox_delivery": true,
+    "formsubmit_key": "",
+    "formbold_id": ""
+  },
+  "projects": [
+    {
+      "title": "Horoscope",
+      "type": "Web app",
+      "description": "A dark, satirical take on horoscopes, tarot and palm reading. Zodiac picks, eerie animations and a lot of personality.",
+      "url": "https://horoscope-dark-horoscopes-tarot.vercel.app",
+      "link_label": "Visit live site",
+      "cursor": "OPEN",
+      "art": "horror",
+      "image": ""
+    },
+    {
+      "title": "Ghost Rush",
+      "type": "Browser game",
+      "description": "A fast, spooky endless-runner game for the browser. Dodge, dash and chase a high score as a ghost on the run.",
+      "url": "https://ghost-rush-game.vercel.app",
+      "link_label": "Play live game",
+      "cursor": "PLAY",
+      "art": "ghost",
+      "image": ""
+    },
+    {
+      "title": "Game World",
+      "type": "Scroll experience",
+      "description": "A scroll-driven, game-style experience where every bit of scrolling pushes the story forward, with layered parallax and motion.",
+      "url": "https://game-dun-eta.vercel.app",
+      "link_label": "Visit live site",
+      "cursor": "PLAY",
+      "art": "game",
+      "image": ""
+    },
+    {
+      "title": "Taj Mahal",
+      "type": "Scroll experience",
+      "description": "A cinematic scroll-in story of the Taj Mahal, where scrolling reveals light, architecture and history frame by frame.",
+      "url": "https://taj-mahal1.vercel.app",
+      "link_label": "Visit live site",
+      "cursor": "OPEN",
+      "art": "taj",
+      "image": ""
+    }
+  ],
+  "posters": [],
+  "pricing": {
+    "currency": "₹",
+    "show_on_cards": false,
+    "rush_multiplier": 1.3,
+    "terms": "These are rough estimates. The final price is confirmed in a written quote after a short chat about your project.",
+    "services": [
+      { "id": "landing", "name": "Landing page", "from": 8000, "to": 15000, "pages": 1, "days": "4–7 days" },
+      { "id": "site", "name": "Portfolio / business website", "from": 15000, "to": 30000, "pages": 5, "days": "1–2 weeks" },
+      { "id": "scroll3d", "name": "Scroll-driven / 3D website", "from": 25000, "to": 60000, "pages": 3, "days": "2–4 weeks" },
+      { "id": "webapp", "name": "Web app / full stack", "from": 40000, "to": 100000, "pages": 0, "days": "3–6 weeks" },
+      { "id": "ai", "name": "AI integration (chatbot, agents, automation)", "from": 15000, "to": 40000, "pages": 0, "days": "1–3 weeks" },
+      { "id": "upgrade", "name": "Upgrade an existing site", "from": 5000, "to": 20000, "pages": 3, "days": "3–10 days" },
+      { "id": "design", "name": "Graphic design (per creative)", "from": 1500, "to": 3000, "pages": 0, "days": "1–3 days" },
+      { "id": "motion", "name": "Motion graphics / video edit (per video)", "from": 3000, "to": 8000, "pages": 0, "days": "2–5 days" }
+    ],
+    "extra_page": { "from": 2000, "to": 4000 },
+    "addons": [
+      { "id": "cms", "name": "CMS (edit content yourself)", "from": 5000, "to": 10000 },
+      { "id": "forms", "name": "Contact / enquiry forms", "from": 1000, "to": 2500 },
+      { "id": "animations", "name": "Custom animations", "from": 3000, "to": 8000 },
+      { "id": "threed", "name": "3D / WebGL scene", "from": 10000, "to": 25000 },
+      { "id": "ecommerce", "name": "Online store & payments", "from": 15000, "to": 30000 },
+      { "id": "auth", "name": "Login / user accounts", "from": 8000, "to": 15000 },
+      { "id": "database", "name": "Database & admin panel", "from": 8000, "to": 15000 },
+      { "id": "chatbot", "name": "AI chatbot", "from": 10000, "to": 25000 },
+      { "id": "multilingual", "name": "Multiple languages", "from": 4000, "to": 8000 },
+      { "id": "seo", "name": "SEO setup", "from": 3000, "to": 6000 }
+    ]
+  }
+}
