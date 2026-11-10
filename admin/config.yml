@@ -1,13 +1,13 @@
-# Decap CMS — edit your portfolio at https://portfolio-two-mauve-66.vercel.app/admin
+# Decap CMS — edit your portfolio at https://yatharthtyagi-portfolio.vercel.app/admin
 backend:
   name: github
   repo: yatharthtyagi35-ship-it/portfolio
   branch: main
-  base_url: https://portfolio-two-mauve-66.vercel.app
+  base_url: https://yatharthtyagi-portfolio.vercel.app
   auth_endpoint: api/auth
 
-site_url: https://portfolio-two-mauve-66.vercel.app
-display_url: https://portfolio-two-mauve-66.vercel.app
+site_url: https://yatharthtyagi-portfolio.vercel.app
+display_url: https://yatharthtyagi-portfolio.vercel.app
 media_folder: images/uploads
 public_folder: /images/uploads
 
