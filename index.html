@@ -394,6 +394,29 @@ footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;border
 .qgrid textarea{resize:vertical;min-height:140px;line-height:1.5}
 .qgrid input:focus,.qgrid select:focus,.qgrid textarea:focus{border-color:var(--lime);background:#1a1d12}
 .hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}
+/* human check */
+.hcheck{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:var(--ink-2);transition:border-color .25s}
+.hcheck.ok{border-color:rgba(212,255,30,.55)}.hcheck.bad{border-color:#ff8a8a}
+.qgrid .hcheck label{flex-direction:row;align-items:center;gap:12px}
+.hc-box{cursor:pointer;min-height:44px;font-size:16px;font-weight:500;-webkit-user-select:none;user-select:none}
+.qgrid .hc-box input{position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0;pointer-events:none}
+.hc-tick{flex:none;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--mute);display:grid;place-items:center;transition:background .2s,border-color .2s}
+.hc-tick::after{content:"";width:12px;height:6px;border:solid var(--ink);border-width:0 0 2.5px 2.5px;transform:translateY(-2px) rotate(-45deg) scale(0);transition:transform .2s}
+.hc-box input:checked+.hc-tick{background:var(--lime);border-color:var(--lime)}
+.hc-box input:checked+.hc-tick::after{transform:translateY(-2px) rotate(-45deg) scale(1)}
+.hc-box input:focus-visible+.hc-tick{outline:2px solid var(--lime);outline-offset:3px}
+.hc-tag{color:var(--mute);font-size:10px}
+.hc-q{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:15px;color:#cfcfc4}
+.qgrid .hc-q label{display:inline-flex;gap:8px;white-space:nowrap}
+.hc-q[hidden]{display:none}
+.hc-q b{color:var(--paper);font:500 16px var(--mono)}
+.qgrid .hc-q input{width:72px;padding:10px 8px;text-align:center}
+.hc-new{flex:none;background:none;border:1px solid var(--line);color:var(--paper);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:17px}
+.hc-new:hover{border-color:var(--lime)}
+.hc-msg{flex-basis:100%;color:var(--mute);font:12px var(--body)}
+@media(max-width:420px){.hc-l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.qgrid .hc-q input{width:64px}}
+.hc-msg:empty{display:none}
+.hcheck.ok .hc-msg{color:var(--lime)}.hcheck.bad .hc-msg{color:#ff8a8a}
 .qfoot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:22px}
 .qstatus{color:var(--mute);flex-basis:100%}
 .qstatus.ok{color:var(--lime)}.qstatus.err{color:#ff8a8a}
@@ -761,6 +784,11 @@ body.ai-open #talk,body.ai-open #pop{opacity:0!important;pointer-events:none!imp
         <select name="timeline"><option>Flexible</option><option>Within a month</option><option>Within 2 weeks</option><option>Urgent (this week)</option></select></label>
       <label class="full"><span class="mono">Project details <i>(write casually, I'll get it)</i></span><textarea name="message" required rows="5" placeholder="e.g. need a website for my cafe with menu and online orders, something like bluebottle"></textarea></label>
       <input type="text" name="_hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full hcheck" id="hcheck" role="group" aria-label="Human check">
+        <label class="hc-box"><input type="checkbox" id="hcTick"><span class="hc-tick" aria-hidden="true"></span><span>I'm human</span><span class="mono hc-tag">Spam check</span></label>
+        <div class="hc-q" id="hcQ" hidden><label for="hcAns"><span class="hc-l">Quick check:</span> <b id="hcSum">4 + 7</b> =</label><input id="hcAns" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-describedby="hcMsg"><button type="button" class="hc-new" aria-label="Give me a different question">↻</button></div>
+        <span class="hc-msg" id="hcMsg" role="status" aria-live="polite"></span>
+      </div>
     </div>
     <div class="qfoot">
       <button class="btn lime" type="submit">Send enquiry →</button>
@@ -1064,14 +1092,30 @@ const CHANNELS=urgent=>{const l=[];if(inboxOn())l.push({l:'Send now ✓',v:'ch:d
 /* --- contact form: writes the same professional message --- */
 const qf=$('#qform');
 if(qf){const qs=qf.querySelector('.qstatus'),btn=qf.querySelector('[type=submit]');
+  /* human check: tick + a quick sum, plus a timing trap (bots submit instantly) */
+  const hc=$('#hcheck'),hcTick=$('#hcTick'),hcQ=$('#hcQ'),hcSum=$('#hcSum'),hcAns=$('#hcAns'),hcMsg=$('#hcMsg'),hcT0=Date.now();
+  let hcA=0,hcOk=false;
+  const hcSay=(t,cls)=>{hcMsg.textContent=t;hc.classList.remove('ok','bad');if(cls)hc.classList.add(cls)};
+  function hcNew(){const a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9);hcA=a+b;hcSum.textContent=a+' + '+b;hcAns.value='';hcOk=false}
+  function hcReset(){hcTick.checked=false;hcQ.hidden=true;hcSay('');hcNew()}
+  hcTick.addEventListener('change',()=>{hcNew();hcQ.hidden=!hcTick.checked;
+    if(hcTick.checked){hcSay('Type the answer to confirm.');setTimeout(()=>hcAns.focus({preventScroll:true}),60)}else hcSay('')});
+  hcAns.addEventListener('input',()=>{hcAns.value=hcAns.value.replace(/\D/g,'').slice(0,2);
+    hcOk=hcAns.value!==''&&+hcAns.value===hcA;if(hcOk)hcSay('Verified ✓ Thanks!','ok');else if(hcAns.value.length>=String(hcA).length)hcSay("Not quite. Try again.",'bad');else hcSay('Type the answer to confirm.')});
+  hc.querySelector('.hc-new').addEventListener('click',()=>{hcNew();hcSay('New question. Type the answer to confirm.');hcAns.focus()});
+  hcNew();
   qf.addEventListener('submit',async e=>{e.preventDefault();
     if(!qf.checkValidity()){qf.reportValidity();return}
     const f=Object.fromEntries(new FormData(qf));if(f._hp)return;
+    if(!hcOk){if(hcTick.checked){hcSay("That answer isn't right. Here's a new one.",'bad');hcNew();hcAns.focus({preventScroll:true})}
+      else{hcSay("Please tick “I'm human” before sending.",'bad');hcTick.focus({preventScroll:true})}
+      hc.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});return}
+    if(Date.now()-hcT0<3000){hcSay('Hold on a second and press Send again.','bad');return}
     const d={name:f.name,email:f.email,company:f.company,phone:f.phone,service:f.service,budget:f.budget,timeline:f.timeline,need:f.message,
       rush:/urgent/i.test(f.timeline||'')||/(urgent|asap|jaldi)/i.test(f.message||''),source:'Website contact form'};
     const letter=writeLetter(d);
     btn.disabled=true;qs.className='qstatus mono';qs.textContent='Sending…';
-    if(await sendDirect(letter,d)){qs.innerHTML=`<span>Sent ✓ Thanks${d.name?', '+esc(cap(d.name).split(' ')[0]):''}! Your enquiry is in my inbox. I'll reply to ${esc(d.email)} within 24 hours${d.rush&&d.phone?' and call you if it\'s urgent':''}.</span>`;qs.classList.add('ok');qf.reset();btn.disabled=false;return}
+    if(await sendDirect(letter,d)){qs.innerHTML=`<span>Sent ✓ Thanks${d.name?', '+esc(cap(d.name).split(' ')[0]):''}! Your enquiry is in my inbox. I'll reply to ${esc(d.email)} within 24 hours${d.rush&&d.phone?' and call you if it\'s urgent':''}.</span>`;qs.classList.add('ok');qf.reset();hcReset();btn.disabled=false;return}
     qs.innerHTML=`<span>${inboxOn()?"Couldn't reach my inbox right now, but your message is written up and ready. Send it another way:":'Your message is written up and ready. Choose how to send it:'}</span><span class="qmail">${CHANNELS(d.rush).filter(c=>c.v!=='ch:direct').map(c=>`<button type="button" class="chip-b${c.go?' go':''}" data-m="${c.v.slice(3)}">${c.l}</button>`).join('')}</span><details class="qprev"><summary>Preview message</summary><pre>${esc(letter.subject+'\n\n'+letter.body)}</pre></details>`;
     qs.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{qs.querySelector('span').innerHTML=deliver(b.dataset.m,letter)}));
     qs.classList.add('ok');btn.disabled=false});
