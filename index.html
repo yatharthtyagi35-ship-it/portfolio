@@ -896,14 +896,18 @@ const progBar=$('#progress'),mq=$('.marquee .track'),skewEls=$$('.masonry,.svc,.
 if(mq)mq.style.animation='none';
 let lastY=scrollY,vel=0,mqx=0,mqDir=1,mqHalf=0,lastSk='',lastPg='';
 const mqMeasure=()=>{mqHalf=mq?mq.scrollWidth/2:0};mqMeasure();addEventListener('resize',mqMeasure);document.fonts&&document.fonts.ready.then(mqMeasure);
-(function fxLoop(){
+let fxPrev=performance.now();
+(function fxLoop(now){
+  now=now||performance.now();const k=Math.min(Math.max((now-fxPrev)/16.67,0),4);fxPrev=now; // same speed on 60/90/120Hz screens
   const y=scrollY,dy=y-lastY;lastY=y;vel+=(dy-vel)*.15;
   const pg=`scaleX(${(y/Math.max(document.documentElement.scrollHeight-innerHeight,1)).toFixed(4)})`;if(pg!==lastPg){progBar.style.transform=pg;lastPg=pg}
   if(!reduce){
     const sk=Math.max(-5,Math.min(5,vel*.12)),skv=Math.abs(sk)<.01?'':`skewY(${sk.toFixed(2)}deg)`;if(skv!==lastSk){skewEls.forEach(el=>el.style.transform=skv);lastSk=skv}
     if(Math.abs(dy)>0)mqDir=dy>0?1:-1;
-    if(mq&&mqHalf){const half=mqHalf;mqx-=(1.2+Math.abs(vel)*.6)*mqDir;if(mqx<-half)mqx+=half;if(mqx>0)mqx-=half;mq.style.transform=`translateX(${mqx}px)`}
   }
+  // ribbon always scrolls (Samsung "Remove animations" / power saving turn on reduced motion): slow and steady there, scroll-boosted otherwise
+  if(mq){if(!mqHalf)mqMeasure();
+    if(mqHalf){const half=mqHalf;mqx-=(reduce?.6:1.2+Math.min(Math.abs(vel),40)*.6)*mqDir*k;if(mqx<-half)mqx+=half;if(mqx>0)mqx-=half;mq.style.transform=`translate3d(${mqx.toFixed(1)}px,0,0)`}}
   requestAnimationFrame(fxLoop);
 })();
 // subtle transition flash as the hero hands over to the page
@@ -1519,7 +1523,7 @@ function draw(now){
   requestAnimationFrame(draw);
   const dt=Math.min(Math.max((now-prev)/1000,0),.1);prev=now;
   sCh+=(holding-sCh)*(holding?.05:.18);
-  if(!reduce)t+=dt*(1+sCh*1.5);
+  t+=dt*(reduce?.5:1+sCh*1.5); // gentle idle spin even when the phone asks for reduced motion
   for(let i=0;i<4;i++)form[i]+=(formT[i]-form[i])*.06;
   for(let i=0;i<3;i++)A[i]+=(targetA[i]-A[i])*.08;
   const tg=gyro&&tm.x===0&&tm.y===0?gyro:tm;
